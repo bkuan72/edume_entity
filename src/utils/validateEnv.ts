@@ -25,9 +25,7 @@ import {
         MAILER_PRODUCT_NAME: str(),
         MAILER_PRODUCT_REGISTRATION_LINK: str(),
         MAILER_PRODUCT_RESET_PWD_LINK: str(),
-        DEFAULT_PROXY_PATH: str(),
-        DEFAULT_PROXY_TARGET_PATH: str(),
-        DEFAULT_PROXY_LOG_LEVEL: str(),
+
         ROUTER_SERVICE: str(),
         ROUTER_SERVICE_PORT: str()
     });
