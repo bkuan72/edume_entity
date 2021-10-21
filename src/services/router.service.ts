@@ -35,7 +35,9 @@ export class RouterService {
                 auth_admin: false,
                 auth_dev: false,
                 auth_user_account: false,
-                license_check: false
+                license_check: false,
+                proxy_target: SysEnv.PROXY_TARGET,
+                proxy_change_origin: true
             }
             switch(authType) {
                 case RouteAuthEnum.ADMIN:
@@ -65,7 +67,7 @@ export class RouterService {
                 host: SysEnv.ROUTER_SERVICE + ':' + SysEnv.ROUTER_SERVICE_PORT,
                 hostname: SysEnv.ROUTER_SERVICE,
                 port: SysEnv.ROUTER_SERVICE_PORT,
-                path: '/api/putRoute',
+                path: '/api/routes/putRoute',
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,7 +82,6 @@ export class RouterService {
                 res.on('data', d => {
                     body.push(d);
                     const data = Buffer.concat(body).toString();
-                    console.info(data);
                     routes = JSON.parse(data);
                     console.info(data);
                     resolve(routes);
@@ -90,6 +91,7 @@ export class RouterService {
                 console.error(error)
                 resolve(routes);
               });
+            console.info(jsonData)
             req.write(jsonData)
             req.end();
         })

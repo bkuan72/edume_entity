@@ -27,7 +27,8 @@ import {
         MAILER_PRODUCT_RESET_PWD_LINK: str(),
 
         ROUTER_SERVICE: str(),
-        ROUTER_SERVICE_PORT: str()
+        ROUTER_SERVICE_PORT: str(),
+        PROXY_TARGET: str()
     });
   }
 

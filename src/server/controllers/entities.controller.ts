@@ -30,30 +30,27 @@ export class EntitiesController implements Controller{
   }
 
   public initializeRoutes() {
-    this.routerService.putRoute(this.path, RouteAuthEnum.NORMAL, RouteOtherAuthEnum.NONE).finally(() => {
-      this.router.post(this.path,
-        validationMiddleware(entities_schema),
-        this.newEntity);
+    this.routerService.putRoute('/api'+this.path+'/post', RouteAuthEnum.NORMAL, RouteOtherAuthEnum.NONE).finally(() => {
+      this.router.post(this.path+'/post', validationMiddleware(entities_schema), this.newEntity);
+        this.routerService.putRoute('/api'+this.path, RouteAuthEnum.NORMAL, RouteOtherAuthEnum.NONE).finally(() => {
+          this.router.get(this.path, this.getAll);
+          this.routerService.putRoute('/api'+this.path+'/byId/:id', RouteAuthEnum.NORMAL, RouteOtherAuthEnum.NONE).finally(() => {
+            this.router.get(this.path+'/byId/:id', this.findById);
+            this.routerService.putRoute('/api'+this.path+'/:id', RouteAuthEnum.NORMAL, RouteOtherAuthEnum.NONE).finally(() => {
+              this.router.patch(this.path+'/:id',  validationUpdateMiddleware(entities_schema), this.update);
+              this.routerService.putRoute('/api'+this.path+'/DTO', RouteAuthEnum.DEV, RouteOtherAuthEnum.NONE).finally(() => {
+                this.router.get(this.path+'/DTO', this.apiDTO);
+                this.routerService.putRoute('/api'+this.path+'/updDTO', RouteAuthEnum.NONE, RouteOtherAuthEnum.NONE).finally(() => {
+                  this.router.get(this.path+'/updDTO', this.apiUpdDTO);
+                  this.routerService.putRoute('/api'+this.path+'/schema', RouteAuthEnum.DEV, RouteOtherAuthEnum.NONE).finally(() => {
+                    this.router.get(this.path+'/schema', this.apiSchema);
+                  })
+                })
+              })
+            })
+          })
+        })
     })
-    this.routerService.putRoute(this.path, RouteAuthEnum.NORMAL, RouteOtherAuthEnum.NONE).finally(() => {
-      this.router.get(this.path, this.getAll);
-    })
-    this.routerService.putRoute(this.path+'/byId/:id', RouteAuthEnum.NORMAL, RouteOtherAuthEnum.NONE).finally(() => {
-      this.router.get(this.path+'/byId/:id', this.findById);
-    })
-    this.routerService.putRoute(this.path+'/:id', RouteAuthEnum.NORMAL, RouteOtherAuthEnum.NONE).finally(() => {
-      this.router.patch(this.path+'/:id',  validationUpdateMiddleware(entities_schema), this.update);
-    })
-    this.routerService.putRoute(this.path+'/DTO', RouteAuthEnum.DEV, RouteOtherAuthEnum.NONE).finally(() => {
-      this.router.get(this.path+'/DTO', this.apiDTO);
-    })
-    this.routerService.putRoute(this.path+'/DTO', RouteAuthEnum.NORMAL, RouteOtherAuthEnum.NONE).finally(() => {
-      this.router.get(this.path+'/updDTO', this.apiUpdDTO);
-    })
-    this.routerService.putRoute(this.path+'/DTO', RouteAuthEnum.DEV, RouteOtherAuthEnum.NONE).finally(() => {
-      this.router.get(this.path+'/schema', this.apiSchema);
-    })
-
     return;
   }
 

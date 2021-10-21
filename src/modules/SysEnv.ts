@@ -25,6 +25,7 @@ export class SystemEnvironment {
  
     ROUTER_SERVICE: string;
     ROUTER_SERVICE_PORT: string;
+    PROXY_TARGET: string;
 
     private COOKIE_AUTH: string;
 
@@ -54,6 +55,7 @@ export class SystemEnvironment {
 
         this.ROUTER_SERVICE = 'localhost';
         this.ROUTER_SERVICE_PORT = '3032';
+        this.PROXY_TARGET = 'edume_entity'
     }
     init(): void {
         if (process.env.DB_HOST !== undefined) {
@@ -127,6 +129,9 @@ export class SystemEnvironment {
         }
         if (process.env.ROUTER_SERVICE_PORT !== undefined) {
             this.ROUTER_SERVICE_PORT = process.env.ROUTER_SERVICE_PORT;
+        }
+        if (process.env.PROXY_TARGET !== undefined) {
+            this.PROXY_TARGET = process.env.PROXY_TARGET;
         }
     }
     CookieAuth(): boolean {
