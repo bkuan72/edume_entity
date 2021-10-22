@@ -40,7 +40,7 @@ export class EntitiesController implements Controller{
               this.router.patch(this.path+'/patch/:id',  validationUpdateMiddleware(entities_schema), this.update);
               this.routerService.putRoute('/api'+this.path+'/DTO', RouteAuthEnum.DEV, RouteOtherAuthEnum.NONE).finally(() => {
                 this.router.get(this.path+'/DTO', this.apiDTO);
-                this.routerService.putRoute('/api'+this.path+'/updDTO', RouteAuthEnum.NONE, RouteOtherAuthEnum.NONE).finally(() => {
+                this.routerService.putRoute('/api'+this.path+'/updDTO', RouteAuthEnum.NORMAL, RouteOtherAuthEnum.NONE).finally(() => {
                   this.router.get(this.path+'/updDTO', this.apiUpdDTO);
                   this.routerService.putRoute('/api'+this.path+'/schema', RouteAuthEnum.DEV, RouteOtherAuthEnum.NONE).finally(() => {
                     this.router.get(this.path+'/schema', this.apiSchema);
