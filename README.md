@@ -1,2 +1,2 @@
-# edumeapi_gateway
-Edume API gateway
+# edume_entity
+Template microservice entity
