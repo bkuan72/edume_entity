@@ -55,7 +55,7 @@ export class SystemEnvironment {
 
         this.ROUTER_SERVICE = 'localhost';
         this.ROUTER_SERVICE_PORT = '3032';
-        this.PROXY_TARGET = 'edume_entity'
+        this.PROXY_TARGET = 'edume_entity';
     }
     init(): void {
         if (process.env.DB_HOST !== undefined) {
