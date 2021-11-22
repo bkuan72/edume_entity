@@ -1,13 +1,10 @@
 import * as express from 'express';
-import dbConnection from './modules/DbModule';
 // import cookieParser = require('cookie-parser');
 import SysLog from './modules/SysLog';
 import toobusy_js = require('toobusy-js');
 import ServerTooBusyException from './exceptions/ServerTooBusyException';
 // import rateLimit = require('express-rate-limit');
 import SysEnv from './modules/SysEnv';
-import { ServerDefaultProperties, ServerPropertyTypeEnum } from './config/server.default.properties';
-import { PropertyModel } from './server/models/property.model';
 
 
 
@@ -16,13 +13,10 @@ class App {
   public app: express.Application;
   public port: number;
   public logger: any;
-  private properties: PropertyModel;
 
   constructor(controllers: any[], port: number) {
-    this.properties = new PropertyModel();
     this.app = express.default();
     this.port = port;
-    this.connectToTheDatabase();
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
     // The default maxLag value is 70ms, and the default check interval is 500ms.
@@ -76,63 +70,6 @@ class App {
     });
   }
 
-  private createDefaultProperties(index: number): Promise<void> {
-    return new Promise<void>((resolve) => {
-        if (index >= ServerDefaultProperties.length) {
-          resolve();
-        } else {
-          const prop = ServerDefaultProperties[index];
-          const propName = SysEnv.SITE_CODE +'.'+ prop.name
-          this.properties.find({
-            name: propName
-          }).then((propArray) => {
-            if (propArray.length === 0) {
-              const newProperty = {
-                name: '',
-                property_type: '',
-                value: '',
-                numValue: 0
-              };
-              newProperty.name = propName;
-              switch(prop.type) {
-                case ServerPropertyTypeEnum.INT:
-                  if (prop.numValue) {
-                    newProperty.numValue = prop.numValue;
-                  }
-                  newProperty.property_type = 'INT';
-                  break;
-                case ServerPropertyTypeEnum.TEXT:
-                  if (prop.value) {
-                    newProperty.value = prop.value;
-                  }
-                  newProperty.property_type = 'TEXT';
-                break;
-              }
-              this.properties.create(newProperty).finally(() => {
-                this.createDefaultProperties(index + 1);
-              })
-            }
-          })
-          .catch((err) => {
-            throw(err);
-          });
-
-        }
-
-    });
-  }
-
-  private connectToTheDatabase() {
-    dbConnection.DBM_connectDB()
-    .then(async () => {
-
-      this.createDefaultProperties(0);
-
-    })
-    .catch((err) => {
-      throw(err);
-    });
-  }
 
   public listen(): void {
     console.log(`App listening on the port ${this.port}`);

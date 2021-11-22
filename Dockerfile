@@ -16,5 +16,5 @@ COPY --from=build-step /app/src/build /app/edume_entity
 COPY package*.json /app/edume_entity
 RUN npm install && npm i -g nodemon
 CMD [ "npm", "run", "run-build" ]
-EXPOSE 3303
+EXPOSE 33999
 

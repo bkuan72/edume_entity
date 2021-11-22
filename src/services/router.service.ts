@@ -86,6 +86,9 @@ export class RouterService {
                     console.info(data);
                     resolve(routes);
                 });
+                res.on('end', ()=>{
+                    resolve(routes);
+                  });
             });
             req.on('error', error => {
                 console.error(error)

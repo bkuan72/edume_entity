@@ -28,7 +28,9 @@ import {
 
         ROUTER_SERVICE: str(),
         ROUTER_SERVICE_PORT: str(),
-        PROXY_TARGET: str()
+        PROXY_TARGET: str(),
+        PROPERTY_SERVICE: str(),
+        PROPERTY_SERVICE_PORT: str(),
     });
   }
 
