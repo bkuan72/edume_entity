@@ -9,7 +9,8 @@ import { PropertyService } from '../services/property.service';
 export class AppDbModule {
     dbConnection = dbConnection;
     properties = new PropertyService();
-    private firstContact: boolean;
+    propertiesRetry = true;
+
 
     serverCfg!: {
         host: string | undefined;
@@ -17,16 +18,13 @@ export class AppDbModule {
         password: string | undefined;
     };
 
-    constructor() {
-      this.firstContact = true;
-    }
 
     public connectDB(): Promise<Session> {
         return new Promise((resolve) => {
             this.dbConnection.DBM_connectDB().then((connection) => {
-                if (this.firstContact) {
-                  this.firstContact = true;
-                  this.createDefaultProperties(0).finally(() => {
+                if (this.propertiesRetry) {
+                  this.propertiesRetry = false;
+                  this.createDefaultProperties().finally(() => {
                     resolve(connection);
                   });
                 } else {
@@ -36,13 +34,19 @@ export class AppDbModule {
         });
     }
 
-    private createDefaultProperties(index: number): Promise<void> {
+    private createDefaultProperties(): Promise<void> {
       return new Promise<void>((resolve) => {
-          if (index >= ServerDefaultProperties.length) {
-            resolve();
+        const createProperty = (res: (value: void | PromiseLike<void>) => void, idx: number ):void => {
+          if (this.propertiesRetry === false) {
+            res();
+            return;
+          }
+          if (idx >= ServerDefaultProperties.length) {
+            this.propertiesRetry = false;
+            res();
           } else {
-            const prop = ServerDefaultProperties[index];
-            const propName = SysEnv.SITE_CODE +'.'+ prop.name
+            const prop = ServerDefaultProperties[idx];
+            const propName = SysEnv.SITE_CODE + '.' + prop.name;
             const newProperty = {
               name: '',
               property_type: '',
@@ -50,7 +54,7 @@ export class AppDbModule {
               numValue: 0
             };
             newProperty.name = propName;
-            switch(prop.type) {
+            switch (prop.type) {
               case ServerPropertyTypeEnum.INT:
                 if (prop.numValue) {
                   newProperty.numValue = prop.numValue;
@@ -62,18 +66,24 @@ export class AppDbModule {
                   newProperty.value = prop.value;
                 }
                 newProperty.property_type = 'TEXT';
-              break;
+                break;
             }
-            this.properties.getProperty (newProperty).then((propertyDTO) => {
+            this.properties.getProperty(newProperty).then((propertyDTO) => {
               if (propertyDTO.length > 0) {
-                ServerDefaultProperties[index].numValue = propertyDTO[0].numValue;
-                ServerDefaultProperties[index].value = propertyDTO[0].value;
+                ServerDefaultProperties[idx].numValue = propertyDTO[0].numValue;
+                ServerDefaultProperties[idx].value = propertyDTO[0].value;
               }
-              this.createDefaultProperties(index + 1);
+              createProperty(res, idx + 1);
+            }).catch(() => {
+              this.propertiesRetry = true;
+              res();
             })
           }
+        }
+        createProperty(resolve, 0);
       });
     }
+
 }
 
 
