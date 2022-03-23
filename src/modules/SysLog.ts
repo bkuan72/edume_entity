@@ -126,7 +126,7 @@ class Logger {
   }
   http(message: string, ...meta: any[]) {
     this.logger.log('http', message, ...meta);
-    console.info(message, ...meta);
+    // console.info(message, ...meta);
   }
 }
 const SysLog = new Logger();

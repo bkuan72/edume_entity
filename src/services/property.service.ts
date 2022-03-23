@@ -38,11 +38,16 @@ export class PropertyService {
 
         res.on('data', (d) => {
           body.push(d);
-          const data = Buffer.concat(body).toString();
-          properties = JSON.parse(data);
-          console.info(data);
         });
         res.on('end', ()=>{
+          const data = Buffer.concat(body).toString();
+          console.info(data);
+          if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+            properties = JSON.parse(data);
+            console.info(properties);
+          } else {
+            console.error(data);
+          }
           resolve(properties);
         });
       });

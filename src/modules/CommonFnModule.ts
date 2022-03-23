@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable no-prototype-builtins */
+
+import SysEnv from "./SysEnv";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export enum DateAddIntervalEnum {
   YEAR,
@@ -13,6 +16,23 @@ export enum DateAddIntervalEnum {
   MILLISECOND,
 }
 export class CommonFn {
+
+  /**
+  * This function adds a new property to obj object
+  * @param obj - target obj
+  * @param fieldName - new property name
+  * @param dflt - default value of property
+  */
+  static defineProperty(obj: any, fieldName: string, dflt: any) {
+      return Object.defineProperty(obj, fieldName, {
+          value: dflt,
+          writable: true,
+          configurable: true,
+          enumerable: true,
+      });
+  }
+
+
   static strWrapper = (val: string): string => {
     return "'" + val + "'";
   };
@@ -57,6 +77,14 @@ export class CommonFn {
 
   static isString(obj: any) {
     return typeof(obj) === 'string';
+  }
+/**
+ * Convert date to mySQL formatted date
+ * @param dt date object
+ * @returns mySql date format '2021-11-29 05:00:000'
+ */
+  static toMySqlDate(dt: Date) {
+    return dt.toISOString().slice(0, 19).replace('T', ' ');
   }
 
     /**
@@ -142,6 +170,45 @@ export class CommonFn {
     return CommonFn._dateAdd(date, interval, units * -1);
   }
 
+  /**
+   * Check if char is a upper case
+   * @param str input string
+   * @returns true if case is upper
+   */
+  static isUpper(str: string): boolean {
+    return !/[a-z]/.test(str) && /[A-Z]/.test(str);
+  }
+  /**
+   * Convert camel case string to snake case string eg camelCase, CamelCase to camel_case
+   * @param str input string
+   * @returns snake case string eg camel_case
+   */
+  static toSnakeCase(str: string): string  {
+    // convert string to snake case if CAMEL_CASE_DTO environment is Y
+    if (SysEnv.CAMEL_CASE_DTO !== 'Y') {
+        return str;
+      }
+      return str.split(/(?=[A-Z0-9])/).join('_').toLowerCase();
+  }
+
+  /**
+   * convert snake case string to camel case string camel_case  to camelCase
+   * @param str input string
+   * @returns camel case string eg camelCase
+   */
+  static toCamelCase(str: string)
+  {
+    // convert string to camel case if CAMEL_CASE_DTO environment is Y
+    if (SysEnv.CAMEL_CASE_DTO !== 'Y') {
+      return str;
+    }
+    return str.replace(/([-_ ][a-z0-9])/ig, ($1) => {
+      return $1.toUpperCase()
+        .replace('-', '')
+        .replace('_', '')
+        .replace(' ', '');
+    });
+  }
 
 }
 

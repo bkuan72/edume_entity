@@ -6,6 +6,7 @@ import SysEnv from './modules/SysEnv';
 import 'dotenv/config'; // loads the .env environment
 import validateEnv from './utils/validateEnv';
 import App from './app';
+import appDbConnection from './modules/AppDBModule';
 
 // validate that all required environment variable is present
 SysEnv.init();
@@ -15,7 +16,8 @@ validateEnv();
 // const tokens = new TokenModel(tokens_schema_table);
 
 const port = SysEnv.PORT;
-
+// insert  authentication controller into stack
+appDbConnection.initializeModuleDB().then(async () => {
 
 const app = new App (
   [
@@ -26,6 +28,7 @@ const app = new App (
 );
 
 app.listen();
+});
 
 process.on('SIGINT', function() {
   // app.close();

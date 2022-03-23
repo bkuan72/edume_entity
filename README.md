@@ -1,2 +1,2 @@
-# edume_entity
+# ls10_net_entity
 Template microservice entity

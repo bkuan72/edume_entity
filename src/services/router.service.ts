@@ -24,9 +24,15 @@ export class RouterService {
      */
     putRoute( url_path: string,
               authType: RouteAuthEnum,
-              otherAuth: RouteOtherAuthEnum
+              otherAuth: RouteOtherAuthEnum,
+              module?: string
             ): Promise<any[]> {
         return new Promise<any[]>((resolve) => {
+
+            // if (SysEnv.NODE_ENV === 'debug') {
+            //     resolve([]);
+            //     return;
+            // }
             const body: Uint8Array[] = [];
             let routes: any[] | PromiseLike<any[]> = [];
             const data = {
@@ -37,7 +43,8 @@ export class RouterService {
                 auth_user_account: false,
                 license_check: false,
                 proxy_target: SysEnv.PROXY_TARGET,
-                proxy_change_origin: true
+                proxy_change_origin: true,
+                module: module
             }
             switch(authType) {
                 case RouteAuthEnum.ADMIN:
@@ -81,12 +88,16 @@ export class RouterService {
 
                 res.on('data', d => {
                     body.push(d);
-                    const data = Buffer.concat(body).toString();
-                    routes = JSON.parse(data);
-                    console.info(data);
-                    resolve(routes);
                 });
                 res.on('end', ()=>{
+                    const data = Buffer.concat(body).toString();
+                    console.info(data);
+                    if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+                        routes = JSON.parse(data);
+                        console.info(routes);
+                    } else {
+                      console.error(data);
+                    }
                     resolve(routes);
                   });
             });
@@ -125,8 +136,12 @@ export class RouterService {
                     res.on('end', () => {
                         const data = Buffer.concat(body).toString();
                         console.info(data);
-                        routes = JSON.parse(data);
-                        console.info(routes);
+                        if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+                            routes = JSON.parse(data);
+                            console.info(routes);
+                        } else {
+                          console.error(data);
+                        }
                         resolve(routes);
                     });
                 });
